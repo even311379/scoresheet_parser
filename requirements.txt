@@ -1,0 +1,12 @@
+sklearn
+matplotlib
+numpy
+pandas
+scipy
+pdftotext
+regex
+pypdf2
+tqdm
+jieba
+jupyter
+openpyxl
