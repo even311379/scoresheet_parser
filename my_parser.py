@@ -498,7 +498,7 @@ def additional_table_parser(table_txt):
             output += tl;
 
     output = [output[i] for i in [0,1,2,5,8,11,14,3,6,9,12,15,4,7,10,13,16]]
-    tt = re.findall('擇最佳成績填入\)\n([\s\S]+)\n    一、您為何選擇本系就讀？',table_page)[0]
+    tt = re.findall('擇最佳成績填入\)\n([\s\S]+)\n    一、您為何選擇本系就讀？',table_txt)[0]
     if ('公民' in tt) or ('生涯' in tt):
         '''
         土木系與外文系
