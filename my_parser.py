@@ -468,3 +468,54 @@ def keep_score_sheet_only(infile, outfile):
 
     with open(outfile, 'wb') as f:
         output.write(f)
+        
+        
+def additional_table_parser(table_txt):
+    output = []
+    name = re.findall('就讀學校：(.*?)\n',table_txt)[0].replace('_','')
+    school = re.findall('姓名：(.*?)性',table_txt)[0].replace(' ','')
+    output += [name,school]
+    for i in ['一上','一下','二上','二下','三上']:
+        tt = re.findall(f'高{i}(.*?)\n',table_txt)[0]
+        tl = [round(eval(j),2) for j in re.findall('\d{1,3}/\d{2,3}',tt)]
+        if len(tl) < 3:
+            class_year = False
+            for c in re.findall('( +)',tt):
+                '''
+                check how long the space is to determine the missing...
+                so dirty...
+                '''
+                if len(c) > 10:
+                    class_year = True
+                    break
+            if class_year:
+                output += [tl[0],np.nan,tl[1]]
+            elif len(tl) == 2:
+                output += [tl[0],tl[1],np.nan]
+            else:
+                output += [tl[0],np.nan,np.nan]
+        else:
+            output += tl;
+
+    output = [output[i] for i in [0,1,2,5,8,11,14,3,6,9,12,15,4,7,10,13,16]]
+    tt = re.findall('擇最佳成績填入\)\n([\s\S]+)\n    一、您為何選擇本系就讀？',table_page)[0]
+    if ('公民' in tt) or ('生涯' in tt):
+        '''
+        土木系與外文系
+        '''
+        tt = re.split(' +',tt.replace('\n',''))
+        rest = [tt[2],float(tt[3]),tt[4],float(tt[5]),tt[1]+tt[-1],float(tt[-2])]
+    else:
+        tt = re.split(' +',tt.replace('\n',''))[1:]            
+        rest = [float(tt[i]) if i%2 == 1 else tt[i] for i in range(len(tt))]
+        
+    while len(rest) < 6:
+        '''
+        生機系: len(tt) == 4 else 6
+        '''
+        rest.append(np.nan)
+        
+    output += rest
+    output.insert(0,file.split('/')[1])
+    output.insert(1,file.split('/')[2])
+    return output
